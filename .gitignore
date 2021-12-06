@@ -1,0 +1,5 @@
+/build/
+/cmake-build-debug/
+/.idea/
+/cmake-build-debug-coverage/
+src/lib/resources.h
