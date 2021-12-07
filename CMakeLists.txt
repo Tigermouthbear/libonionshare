@@ -36,6 +36,3 @@ target_include_directories(onionshare PUBLIC external/torc/src external/jinja2cp
 
 add_executable(libonionshare_cli src/cli/main.c)
 target_link_libraries(libonionshare_cli onionshare)
-
-add_executable(libonionshare_test test/test.c)
-target_link_libraries(libonionshare_test onionshare)

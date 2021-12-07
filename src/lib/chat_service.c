@@ -207,11 +207,7 @@ static void chat_routing(struct mg_connection* c, int event, void* ev_data, void
             }
         }
         if(index != -1) {
-            size_t n = sizeof(chat_service);
-            // if its not the last connection in list, copy the connections behind it onto it
-            if(chat_service->user_num - 1 >= index + 1) {
-                memmove(chat_service->users + index * n, chat_service->users + (index + 1) * n, (chat_service->user_num - 1 - index) * n);
-            }
+            for(int i = index; i < chat_service->user_num - 1; i++) chat_service->users[i] = chat_service->users[i + 1];
             chat_service->user_num--;
             send_chat_status_msg(chat_service, STATUS_MSG_LEFT, left_name, NULL);
         }
