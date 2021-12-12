@@ -39,5 +39,7 @@ add_library(onionshare src/lib/onionshare.c include/onionshare.h
 target_link_libraries(onionshare torc)
 target_include_directories(onionshare PUBLIC external/torc/src src/lib/include)
 
-add_executable(libonionshare_cli src/cli/main.c)
-target_link_libraries(libonionshare_cli onionshare)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR) # only build CLI when not being used as a library/subdirectory
+    add_executable(libonionshare_cli src/cli/main.c)
+    target_link_libraries(libonionshare_cli onionshare)
+endif()
