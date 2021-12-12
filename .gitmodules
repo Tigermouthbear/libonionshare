@@ -1,6 +1,3 @@
 [submodule "external/torc"]
 	path = external/torc
 	url = https://github.com/Tigermouthbear/torc.git
-[submodule "external/jinja2cpp"]
-	path = external/jinja2cpp
-	url = https://github.com/jinja2cpp/Jinja2Cpp.git

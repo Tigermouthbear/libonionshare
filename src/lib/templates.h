@@ -18,15 +18,15 @@ typedef struct {
     char* second;
 } template_breadcrumb;
 
-char* template_403_html(char* static_url_path);
-char* template_404_html(char* static_url_path);
-char* template_405_html(char* static_url_path);
-char* template_500_html(char* static_url_path);
+char* template_403_html(const char* static_url_path);
+char* template_404_html(const char* static_url_path);
+char* template_405_html(const char* static_url_path);
+char* template_500_html(const char* static_url_path);
 
-char* template_chat(char* static_url_path, char* title/*OPT NULL*/);
+char* template_chat(const char* static_url_path, const char* title/*OPT NULL*/);
 
-char* template_listing(char* static_url_path, template_file_info* dirs, int dirs_size, template_file_info* files, int files_size,
-                       template_breadcrumb* breadcrumbs, int breadcrumbs_size, char* breadcrumbs_leaf, char* title/*OPT NULL*/);
+char* template_listing(const char* static_url_path, template_file_info* dirs, int dirs_size, template_file_info* files, int files_size,
+                       template_breadcrumb* breadcrumbs, int breadcrumbs_size, const char* breadcrumbs_leaf, char* title/*OPT NULL*/);
 
 char* template_receive(char* static_url_path, bool disable_files, bool disable_text, char* title/*OPT NULL*/);
 

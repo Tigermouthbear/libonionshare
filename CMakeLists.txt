@@ -26,13 +26,18 @@ function(create_resources dir output)
 endfunction()
 
 add_subdirectory(external/torc)
-add_subdirectory(external/jinja2cpp)
 include_directories(include)
 
 create_resources(src/lib/resources src/lib/resources.h)
-add_library(onionshare src/lib/onionshare.c include/onionshare.h src/lib/templates.h src/lib/templates.cpp src/lib/resources.h src/lib/mongoose.h src/lib/mongoose.c src/lib/services.h src/lib/services.c src/lib/chat_service.c)
-target_link_libraries(onionshare torc jinja2cpp)
-target_include_directories(onionshare PUBLIC external/torc/src external/jinja2cpp/include)
+add_library(onionshare src/lib/onionshare.c include/onionshare.h
+        src/lib/templates.h src/lib/templates.cpp
+        src/lib/resources.h
+        src/lib/services.h src/lib/services.c
+        src/lib/chat_service.c
+        src/lib/include/nlohmann/json.hpp src/lib/include/inja.hpp
+        src/lib/mongoose.h src/lib/mongoose.c)
+target_link_libraries(onionshare torc)
+target_include_directories(onionshare PUBLIC external/torc/src src/lib/include)
 
 add_executable(libonionshare_cli src/cli/main.c)
 target_link_libraries(libonionshare_cli onionshare)
