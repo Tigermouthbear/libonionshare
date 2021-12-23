@@ -22,6 +22,12 @@ int onsh_init(onionshare* onionshare, torc_info torc_info) {
         return 1;
     }
 
+    // create response lock
+    if(pthread_mutex_init(&onionshare->lock, NULL) != 0) {
+        TORC_LOG_ERROR("FAILED TO INITIALIZE ONIONSHARE MUTEX LOCK");
+        return 1;
+    }
+
     // initialize mongoose webserver
     mg_mgr_init(&onionshare->mgr);
 
@@ -30,11 +36,19 @@ int onsh_init(onionshare* onionshare, torc_info torc_info) {
 }
 
 void onsh_loop(onionshare* onionshare) {
-    while(onionshare->running) mg_mgr_poll(&onionshare->mgr, 1000);
+    bool running = true;
+    while(running) {
+        mg_mgr_poll(&onionshare->mgr, 1000);
+        pthread_mutex_lock(&onionshare->lock);
+        running = onionshare->running;
+        pthread_mutex_unlock(&onionshare->lock);
+    }
 }
 
 void onsh_stop(onionshare* onionshare) {
+    pthread_mutex_lock(&onionshare->lock);
     onionshare->running = false;
+    pthread_mutex_unlock(&onionshare->lock);
 }
 
 void onsh_close(onionshare* onionshare) {

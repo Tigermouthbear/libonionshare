@@ -18,6 +18,7 @@ extern int errno;
 #endif
 
 typedef struct {
+    pthread_mutex_t lock; // lock to prevent mulit thread variable errors
     bool running;
     torc controller;
     struct mg_mgr mgr;

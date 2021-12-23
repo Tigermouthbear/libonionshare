@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(LIBONIONSHARE_BUILD_TYPE "static" CACHE STRING "The type of library to create: static, object, or shared (default static).")
 
+find_package(Threads REQUIRED)
+
 # creates a resources header file from files in given directory
 function(create_resources dir output)
     file(WRITE ${output} "")
@@ -41,7 +43,7 @@ if(NOT LIBONIONSHARE_BUILD_TYPE STREQUAL "object")
         add_library(onionshare STATIC $<TARGET_OBJECTS:onionshare-object>)
     endif()
 
-    target_link_libraries(onionshare torc)
+    target_link_libraries(onionshare Threads::Threads torc)
     target_include_directories(onionshare PUBLIC external/torc/src src/lib/include)
 
     if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR) # only build CLI when not being used as a library/subdirectory
