@@ -5,6 +5,18 @@
 #include <torc.h>
 #include "../src/lib/mongoose.h"
 
+// dumb simple debug logging
+#include <stdio.h>
+#include <errno.h>
+extern int errno;
+#ifndef NDEBUG
+#define ONSH_LOG_ERROR(...) {fprintf(stderr, "[ONIONSHARE] ");fprintf(stderr, __VA_ARGS__);fprintf(stderr, ": %s\n", strerror(errno));}
+#define ONSH_LOG_DEBUG(...) {fprintf(stdout, "[ONIONSHARE] ");fprintf(stdout, __VA_ARGS__);}
+#else
+#define ONSH_LOG_ERROR(...)
+#define ONSH_LOG_DEBUG(...)
+#endif
+
 typedef struct {
     bool running;
     torc controller;

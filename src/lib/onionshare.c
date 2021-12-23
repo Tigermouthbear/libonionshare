@@ -11,13 +11,13 @@
 int onsh_init(onionshare* onionshare, torc_info torc_info) {
     // connect tor controller
     if(torc_connect_controller(&onionshare->controller, torc_info) != 0) {
-        perror("[ONIONSHARE] FAILED TO CONNECT TO TOR CONTROL PORT");
+        ONSH_LOG_ERROR("FAILED TO CONNECT TO TOR CONTROL PORT");
         return 1;
     }
 
     // authenticate tor controller
     if(!torc_authenticate(&onionshare->controller, NULL)) { // TODO: OPTIONAL PASSWORD AUTH
-        perror("[ONIONSHARE] FAILED TO AUTHENTICATE WITH TOR CONTROL PORT");
+        ONSH_LOG_ERROR("FAILED TO AUTHENTICATE WITH TOR CONTROL PORT");
         torc_close_controller(&onionshare->controller);
         return 1;
     }
@@ -51,7 +51,7 @@ static int onsh_start_mg_service(onsh_service* service, struct mg_mgr* mgr, int 
 
     service->mg_conn = mg_http_listen(mgr, addr, service->routing, service->fn_data);
     if(service->mg_conn == NULL) {
-        perror("[ONIONSHARE] FAILED TO CREATE LISTENER FOR ONIONSHARE SERVICE");
+        ONSH_LOG_ERROR("FAILED TO CREATE LISTENER FOR ONIONSHARE SERVICE");
         return 1;
     }
 
@@ -68,7 +68,7 @@ void onsh_stop_service(onionshare* onionshare, onsh_service* service) {
     torc_command command;
     if(!torc_del_onion(&onionshare->controller, &command, service->service_id)) {
         // failed to delete onion, it will be closed when the controller is stopped
-        perror("[ONIONSHARE] FAILED TO DELETE HIDDEN SERVICE");
+        ONSH_LOG_ERROR("FAILED TO DELETE HIDDEN SERVICE");
     }
 
     // free memory
@@ -102,7 +102,7 @@ static int get_available_port() {
     // create socket for finding open port
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if(sock < 0) {
-        perror("[ONIONSHARE] FAILED TO CREATE SOCKET FOR FINDING OPEN PORT");
+        ONSH_LOG_ERROR("FAILED TO CREATE SOCKET FOR FINDING OPEN PORT");
         return -1;
     }
 
@@ -112,14 +112,14 @@ static int get_available_port() {
     servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
     servaddr.sin_port = 0; // setting to 0 finds open port
     if(bind(sock, (struct sockaddr*) &servaddr, sizeof(servaddr)) != 0) {
-        perror("[ONIONSHARE] FAILED TO BIND SOCKET FOR FINDING OPEN PORT");
+        ONSH_LOG_ERROR("FAILED TO BIND SOCKET FOR FINDING OPEN PORT");
         return -1;
     }
 
     // read found port
     socklen_t len = sizeof(servaddr);
     if(getsockname(sock, (struct sockaddr*)&servaddr, &len) == -1) {
-        perror("[ONIONSHARE] FAILED TO READ SOCKET ADDR FOR FINDING OPEN PORT");
+        ONSH_LOG_ERROR("FAILED TO READ SOCKET ADDR FOR FINDING OPEN PORT");
         return -1;
     }
 
@@ -130,7 +130,7 @@ static int get_available_port() {
 
 static char* onsh_start_onion_service(onionshare* onionshare, int port) {
     if(port > 65535 || port <= 0) {
-        perror("[ONIONSHARE] INVALID PORT FOR ONION SERVICE");
+        ONSH_LOG_ERROR("INVALID PORT FOR ONION SERVICE");
         return NULL;
     }
 
@@ -140,7 +140,7 @@ static char* onsh_start_onion_service(onionshare* onionshare, int port) {
     torc_command command; // TODO: CLIENT AUTH
     torc_add_onion_response response = torc_add_new_onion(&onionshare->controller, &command, port_pair, TORC_FLAGS_DISCARD_PK, 0);
     if(!response.sent || !command.response.ok || response.service_id == NULL) {
-        perror("[ONIONSHARE] FAILED TO ADD ONION FOR CHAT SERVICE");
+        ONSH_LOG_ERROR("FAILED TO ADD ONION FOR CHAT SERVICE");
         return NULL;
     }
 
@@ -160,12 +160,12 @@ char* onsh_start_chat_service(onionshare* onionshare, onsh_service* service, cha
     if(service_id == NULL) return NULL;
     if(onsh_create_chat_service(service, service_id, title) != 0) {
         free(service_id);
-        perror("[ONIONSHARE] FAILED TO CREATE CHAT SERVICE");
+        ONSH_LOG_ERROR("FAILED TO CREATE CHAT SERVICE");
         return NULL;
     }
     if(onsh_start_mg_service(service, &onionshare->mgr, port) != 0) {
         onsh_stop_service(onionshare, service); // stop frees service_id and everything
-        perror("[ONIONSHARE] FAILED TO START CHAT SERVICE");
+        ONSH_LOG_ERROR("FAILED TO START CHAT SERVICE");
         return NULL;
     }
     return service_id;

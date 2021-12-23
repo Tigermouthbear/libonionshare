@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 
     // start onionshare
     if(onsh_init(&onsh, options.torc_info) != 0) {
-        fprintf(stderr, "Failed to start onionshare, exiting...\n");
+        fprintf(stderr, "Failed to create a tor control connection, check your tor config and user permissions. Exiting...\n");
         return 1;
     }
     signal(SIGINT, signal_handler); // set signals for graceful shutdown

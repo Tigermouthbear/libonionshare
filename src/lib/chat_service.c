@@ -32,7 +32,7 @@ static void send_chat_status_msg(onsh_chat_service* chat_service, int type, char
     size_t size = strlen(name) + MAX_CHAT_NAME_LENGTH + (MAX_CHAT_NAME_LENGTH + 3) * chat_service->user_num + 256;
     char* buffer = calloc(size, sizeof(char));
     if(buffer == NULL) {
-        perror("[ONIONSHARE] FAILED TO SEND CHAT STATUS MESSAGE");
+        ONSH_LOG_ERROR("FAILED TO SEND CHAT STATUS MESSAGE");
         return;
     }
     char* curr = buffer;
@@ -101,7 +101,7 @@ static void chat_routing(struct mg_connection* c, int event, void* ev_data, void
             size_t size = chat_service->users_size * 2;
             chat_service->users = realloc(chat_service->users, size * sizeof(onsh_chat_service*));
             if(chat_service->users == NULL) {
-                perror("[ONIONSHARE] FAILED TO REALLOCATE CHAT CONNECTION POOL");
+                ONSH_LOG_ERROR("FAILED TO REALLOCATE CHAT CONNECTION POOL");
                 return;
             }
             chat_service->users_size = size;
@@ -111,7 +111,7 @@ static void chat_routing(struct mg_connection* c, int event, void* ev_data, void
         size_t max_len = MAX_CHAT_NAME_LENGTH + 1;
         char* name = malloc(max_len);
         if(name == NULL) {
-            perror("[ONIONSHARE] FAILED TO ALLOCATE MEM FOR CHAT USER");
+            ONSH_LOG_ERROR("FAILED TO ALLOCATE MEM FOR CHAT USER");
             return;
         }
         do {
@@ -140,7 +140,7 @@ static void chat_routing(struct mg_connection* c, int event, void* ev_data, void
                 // read chat event
                 char* chat_event = malloc(i + 1);
                 if(chat_event == NULL) {
-                    perror("[ONIONSHARE] FAILED TO READ CHAT EVENT");
+                    ONSH_LOG_ERROR("FAILED TO READ CHAT EVENT");
                     return;
                 }
                 memcpy(chat_event, wm->data.ptr, i);
@@ -152,7 +152,7 @@ static void chat_routing(struct mg_connection* c, int event, void* ev_data, void
                     char* chat_msg = malloc(msg_len + 1);
                     if(chat_msg == NULL) {
                         free(chat_event);
-                        perror("[ONIONSHARE] FAILED TO READ CHAT MESSAGE");
+                        ONSH_LOG_ERROR("FAILED TO READ CHAT MESSAGE");
                         return;
                     }
 
@@ -221,7 +221,7 @@ int onsh_create_chat_service(onsh_service* service, char* service_id, char* titl
     // create chat service object
     service->fn_data = malloc(sizeof(onsh_chat_service));
     if(service->fn_data == NULL) {
-        perror("[ONIONSHARE] FAILED TO CREATE CHAT SERVICE BUFFER");
+        ONSH_LOG_ERROR("FAILED TO CREATE CHAT SERVICE BUFFER");
         return 1;
     }
     onsh_chat_service* chat_service = service->fn_data;
@@ -249,7 +249,7 @@ int onsh_create_chat_service(onsh_service* service, char* service_id, char* titl
     if(chat_service->users == NULL) {
         free(service->fn_data);
         free(chat_service->url);
-        perror("[ONIONSHARE] FAILED TO CRATE CHAT CONNECTION POOL");
+        ONSH_LOG_ERROR("FAILED TO CRATE CHAT CONNECTION POOL");
         return 1;
     }
 
