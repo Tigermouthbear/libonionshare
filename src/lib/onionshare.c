@@ -36,6 +36,7 @@ int onsh_init(onionshare* onionshare, torc_info torc_info) {
 }
 
 void onsh_loop(onionshare* onionshare) {
+    onionshare->async = false;
     bool running = true;
     while(running) {
         mg_mgr_poll(&onionshare->mgr, 1000);
@@ -45,10 +46,21 @@ void onsh_loop(onionshare* onionshare) {
     }
 }
 
+static void* async_loop(void* onsh) {
+    onsh_loop((onionshare*) onsh);
+    return 0;
+}
+
+void onsh_loop_async(onionshare* onionshare) {
+    onionshare->async = true;
+    pthread_create(&onionshare->async_thread, NULL, async_loop, onionshare);
+}
+
 void onsh_stop(onionshare* onionshare) {
     pthread_mutex_lock(&onionshare->lock);
     onionshare->running = false;
     pthread_mutex_unlock(&onionshare->lock);
+    if(onionshare->async) pthread_join(onionshare->async_thread, NULL);
 }
 
 void onsh_close(onionshare* onionshare) {

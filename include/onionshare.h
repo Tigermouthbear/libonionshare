@@ -20,6 +20,8 @@ extern int errno;
 typedef struct {
     pthread_mutex_t lock; // lock to prevent mulit thread variable errors
     bool running;
+    bool async;
+    pthread_t async_thread; // the thread used if running asynchronously
     torc controller;
     struct mg_mgr mgr;
 } onionshare;
@@ -35,6 +37,7 @@ typedef struct {
 
 int onsh_init(onionshare* onionshare, torc_info torc_info);
 void onsh_loop(onionshare* onionshare);
+void onsh_loop_async(onionshare* onionshare);
 void onsh_stop(onionshare* onionshare);
 void onsh_close(onionshare* onionshare);
 
